@@ -1,0 +1,34 @@
+import pandas as pd
+import csv
+import numpy as np
+import requests
+from bs4 import BeautifulSoup
+url="https://www.zameen.com/Homes/Islamabad_DHA_Defence-3188-1.html"
+response=requests.get(url)
+soup=BeautifulSoup(response.text, 'html.parser')
+print(soup.title)
+listing=soup.find_all('li',{'class':'ef447dde'})
+print(listing[:1])
+
+l=[]
+for list in listing:
+    
+    information={}
+    
+    plocation=list.find('div',{'class': '_162e6469'}).get_text()
+    information['location']=plocation
+    
+    ptitle=list.find('h2',{'class':'c0df3811'}).get_text()
+    information['title']=ptitle
+    
+    pprice=list.find('div',{'class': '_7ac32433'}).get_text()
+    information['price']=pprice
+    
+    l.append(information)
+    
+print(l[:6])    
+
+df=pd.DataFrame(l,columns=['location','title','price'])
+df.head(10)
+
+csv=df.to_csv('listing.csv', index=False)
